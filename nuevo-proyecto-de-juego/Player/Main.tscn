@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://2o4bsa4aill4"]
+[gd_scene load_steps=30 format=3 uid="uid://2o4bsa4aill4"]
 
 [ext_resource type="Script" uid="uid://dyrksgb1pid8h" path="res://Player/alpaca.gd" id="2_cm0pq"]
 [ext_resource type="Script" uid="uid://djx2rla1bylc7" path="res://Scripts/Main.gd" id="2_r0du0"]
@@ -132,12 +132,21 @@ animations = [{
 radius = 51.38
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r0du0"]
-size = Vector2(1879.5, 111)
+size = Vector2(5862.5, 111)
 
 [sub_resource type="Gradient" id="Gradient_avfv7"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_su2fw"]
 gradient = SubResource("Gradient_avfv7")
+
+[sub_resource type="Gradient" id="Gradient_s5hhb"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_avfv7"]
+gradient = SubResource("Gradient_s5hhb")
+width = 32
+height = 32
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_su2fw"]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("2_r0du0")
@@ -165,25 +174,31 @@ sprite_frames = SubResource("SpriteFrames_5tuhn")
 position = Vector2(154, 489)
 shape = SubResource("CircleShape2D_s5hhb")
 
+[node name="Camera2D" type="Camera2D" parent="Alpaca"]
+offset = Vector2(0, 300)
+
 [node name="Ground" type="StaticBody2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
-position = Vector2(941.25, 589.5)
+position = Vector2(2932.75, 589.5)
 shape = SubResource("RectangleShape2D_r0du0")
 
 [node name="Sprite2D" type="Sprite2D" parent="Ground"]
-position = Vector2(940, 590.5)
-scale = Vector2(29.4375, 1.79688)
+position = Vector2(2931.5, 590.5)
+scale = Vector2(91.6719, 1.79688)
 texture = SubResource("GradientTexture2D_su2fw")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-offset = Vector2(576, 324)
-
-[node name="Collectible" type="Area2D" parent="."]
+[node name="Collectible" type="Area2D" parent="." groups=["collectible"]]
 
 [node name="Sprite2D" type="Sprite2D" parent="Collectible"]
+position = Vector2(727.5, 504.75)
+scale = Vector2(0.703125, 0.726562)
+texture = SubResource("GradientTexture2D_avfv7")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Collectible"]
+position = Vector2(727, 504)
+scale = Vector2(1.525, 1.525)
+shape = SubResource("CircleShape2D_su2fw")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
