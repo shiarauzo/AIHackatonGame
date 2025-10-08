@@ -128,16 +128,17 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r0du0"]
-size = Vector2(1149.5, 111)
+size = Vector2(1854.5, 111)
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("2_r0du0")
 
+[node name="GameManager" type="Node" parent="."]
+
+[node name="PlatformSpawner" type="Node2D" parent="."]
+
 [node name="Alpaca" type="CharacterBody2D" parent="."]
 script = ExtResource("2_cm0pq")
-
-[node name="Camera2D" type="Camera2D" parent="Alpaca"]
-offset = Vector2(100, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Alpaca"]
 position = Vector2(153, 495.25)
@@ -148,16 +149,25 @@ position = Vector2(153, 488)
 scale = Vector2(3.03125, 3.14706)
 sprite_frames = SubResource("SpriteFrames_5tuhn")
 
+[node name="Area2D" type="Area2D" parent="Alpaca"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Alpaca/Area2D"]
+
 [node name="Ground" type="StaticBody2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
-position = Vector2(576.25, 589.5)
+position = Vector2(928.75, 589.5)
 shape = SubResource("RectangleShape2D_r0du0")
 
-[node name="Collectiobles" type="Node2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Points" type="Label" parent="UI"]
+[node name="ScoreLabel" type="Label" parent="UI"]
+offset_right = 40.0
+offset_bottom = 23.0
+metadata/_edit_use_anchors_ = true
+
+[node name="LivesLabel" type="Label" parent="UI"]
 offset_right = 40.0
 offset_bottom = 23.0
