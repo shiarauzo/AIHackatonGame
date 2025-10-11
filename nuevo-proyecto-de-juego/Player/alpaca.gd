@@ -1,63 +1,87 @@
 extends CharacterBody2D
 
-@export var speed: float = 200.0
-@export var jump_force: float = -400.0
-@export var gravity: float = 900.0
-@export var auto_move_speed: float = 120.0  # Velocidad automática hacia adelante
+# Configuración de movimiento
+@export var speed: float = 300.0
+@export var jump_force: float = -500.0
+@export var gravity: float = 980.0
 
-var starting_position = Vector2(400, 300)  # Posición inicial más centrada
+# Sistema de juego
+var lives = 3
+var score = 0
+var is_dead = false
 
 func _ready():
-	starting_position = global_position
-	
-	# Asegurar que la cámara está en la posición correcta
-	if has_node("Camera2D"):
-		var camera = get_node("Camera2D")
-		camera.reset_smoothing()  # Resetea el suavizado para empezar correctamente
+	# La cámara ya debe estar como hijo de la Alpaca
+	pass
 
 func _physics_process(delta):
-	# Gravedad
+	if is_dead:
+		return
+	
+	# Aplicar gravedad
 	if not is_on_floor():
 		velocity.y += gravity * delta
-	else:
-		velocity.y = 0
 	
-	# Movimiento automático hacia la derecha
-	velocity.x = auto_move_speed
-	
-	# Control adicional izquierda/derecha (opcional, para acelerar/frenar)
+	# Movimiento horizontal (izquierda/derecha)
 	var direction = Input.get_axis("ui_left", "ui_right")
-	if direction != 0:
-		velocity.x += direction * speed * 0.3  # 30% de velocidad extra
-		# Voltear sprite según dirección
-		$Sprite.flip_h = direction < 0
 	
-	# Saltar con espacio o flecha arriba
+	if direction != 0:
+		velocity.x = direction * speed
+		# Voltear sprite según dirección
+		if has_node("Sprite"):
+			$Sprite.flip_h = direction < 0
+	else:
+		# Frenar suavemente cuando no hay input
+		velocity.x = move_toward(velocity.x, 0, speed * 0.1)
+	
+	# Saltar (espacio o flecha arriba)
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = jump_force
 	
 	# Aplicar movimiento
 	move_and_slide()
 	
-	# Verificar si cayó al vacío (ajusta según tu ventana)
+	# Detectar caída al vacío
 	if global_position.y > 700:
+		die()
+
+func collect_item(points = 10):
+	score += points
+	print("🎉 Puntos: ", score)
+	
+	# Notificar al Main si existe
+	var main = get_node_or_null("/root/Node2D")
+	if main and main.has_method("update_score"):
+		main.update_score(score)
+
+func die():
+	if is_dead:
+		return
+	
+	is_dead = true
+	lives -= 1
+	print("💔 Vidas restantes: ", lives)
+	
+	if lives <= 0:
+		game_over()
+	else:
+		# Respawn después de 1 segundo
+		await get_tree().create_timer(1.0).timeout
 		respawn()
 
 func respawn():
-	# Llamar al Main para perder vida
-	var main = get_node("/root/Node2D")
-	main.lose_life()
-	
-	# Resetear posición justo adelante de donde cayó (no al inicio)
-	global_position.x = global_position.x + 100
-	global_position.y = 300
+	is_dead = false
+	# Volver al inicio o checkpoint
+	global_position = Vector2(100, 300)
 	velocity = Vector2.ZERO
 
-# Esta función se conectará a la señal del Area2D
+func game_over():
+	print("💀 GAME OVER - Puntos finales: ", score)
+	await get_tree().create_timer(2.0).timeout
+	get_tree().reload_current_scene()
+
+# Conectar esta función a la señal area_entered del Area2D
 func _on_area_2d_area_entered(area):
 	if area.is_in_group("collectible"):
-		# Llamar al Main para sumar puntos
-		var main = get_node("/root/Node2D")
-		main.collect_bolita()
-		# Eliminar la bolita
+		collect_item(10)
 		area.queue_free()
